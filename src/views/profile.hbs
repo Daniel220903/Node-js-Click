@@ -1,0 +1,45 @@
+<div class="container-p-4">
+    <div class="row">
+        <div class="col-md 4 mx-auto">
+            <div class="card text-center">
+                <div class="card-body">
+                {{#if (isEqual userId user.id)}}
+                    <h3>Bienvenido a Click {{profileUser.username}}</h3>
+                    <a href="/links/add" class="btn btn-primary m-4">
+                    Sube publicaciones
+                    </a>
+                    {{else}}
+                    <h3>Perfil de {{profileUser.username}}</h3>
+                {{/if}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container p-4">
+    <div class="row">
+        {{#each pubs}}
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <a href="" >
+                        <h3 class="card-tittle text-uppercase">{{this.tittle}}</h3>
+                    </a>
+                   <p class="m-4">{{this.description}}</p>
+                   <p>{{#if (isEqual '1' this.edited)}} Edited {{/if}}{{timeago this.created_at}}</p>
+                    
+                {{#if (isEqual  ../user.id this.user_id)}} {{!--Aqui uso el ../ en la variable, ya que al
+                                                            entrar el #each pubs subo un nivel, y asi salgo 
+                                                            y entro en el nivel general donde la tengo definida  --}}
+                    <a href="/links/delete/{{id_post}}" class="btn btn-danger">Delete</a>
+                    <a href="/links/edit/{{id_post}}" class="btn btn-secondary">Edit</a>
+                {{/if}}
+                  
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

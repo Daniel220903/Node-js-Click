@@ -1,0 +1,44 @@
+
+
+<div class="container p-4 ">
+    <div class="row">
+        {{!-- La variable link, es la importada desde el archivo links.js --}}
+        {{#each links}}
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <a href="" >
+                            <h3 class="card-tittle text-uppercase">
+                                {{tittle}}
+                            </h3>
+                        </a>
+                        <a href="/profile/{{user_id}}">
+                            <h4 class="card-tittle">
+                             {{username}}                      
+                            </h4>
+                        </a>
+                        <p class="m-4">{{description}}</p>
+                        <p>{{#if (isEqual '1' edited)}} Edited {{/if}}{{timeago created_at}}</p>
+                        
+         {{#if (isEqual user_id sessionId)}}
+
+        <a href="/links/delete/{{id_post}}" class="btn btn-danger">Delete</a>
+        <a href="/links/edit/{{id_post}}" class="btn btn-secondary">Edit</a>
+        
+        {{/if}}
+
+ </div>
+                </div>
+            </div>
+            {{else}}
+            <div class="col-md-4 mx-auto">
+                <div class="card card-body text-center">
+                    <p>No hay ninguna publicacion aun</p>
+                    <a href="/links/add">Publica ahora</a>
+                </div>
+            </div>
+        {{/each}}
+
+    </div>
+</div>
+
