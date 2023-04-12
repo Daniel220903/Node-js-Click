@@ -56,6 +56,7 @@ router.get('/', isLoggedIn,  async (req, res) => {
       }));
     res.render('links/list', { links: linksWithUsers});
 });
+
 router.get('/delete/:id_post',isLoggedIn, async (req, res) =>{
     const {id_post} = req.params;
     const user_id = await pool.query('SELECT user_id FROM posts where id_post = ?', id_post);
@@ -73,6 +74,9 @@ router.get('/delete/:id_post',isLoggedIn, async (req, res) =>{
     }
 });    
         
+
+
+
 router.get('/edit/:id_post',isLoggedIn, async (req, res) =>{
     const{id_post} = req.params;
     const user_id = await pool.query('SELECT user_id FROM posts where id_post = ?', id_post);
