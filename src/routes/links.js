@@ -34,29 +34,28 @@ router.post('/add',isLoggedIn, async(req , res) => {
 //Aqui estoy mandando la variable links a la plantilla, list, que es donde voy a tener las publicaciones
 router.get('/', isLoggedIn,  async (req, res) => {
     const links = await pool.query('SELECT * FROM posts');
-    //con el .map lo que obtenemos son todas las ids que existan en la busqueda links
     const userIds = links.map(link => link.user_id);
-    // console.log(userIds);
-    //Aqui obtengo los datos de todos las id que aparecen en la tabla posts
+
+    if (userIds.length === 0) {
+      // Si el array userIds está vacío, puedes manejar el error o devolver una respuesta adecuada
+      // Aquí se muestra un ejemplo de cómo manejar el error
+      return res.status(400).json({ error: 'No se encontraron IDs de usuario válidas.' });
+    }
+
     const users = await pool.query('SELECT id, username, fullname FROM users WHERE id IN (?)', [userIds]);
-    // console.log(users);
     const userMap = {};
-    //Aqui estoy mapeando todos los resultados de user
     users.forEach(user => {
       userMap[user.id] = user.username;
     });
-    //Aqui le agrego a la matriz links, todos los nombres de usuario correspondientes de quien publica las cosas
+
     const linksWithUsers = links.map(link => ({
-    //Esto es el operador spread, que copia todas las propiedades de links a este objeto
-      ...link,
-      username: userMap[link.user_id],
-      id: userMap[link.user_id],
-      sessionId: req.user.id
-    }));
-    // const sessionId = req.user.id;
+        ...link,
+        username: userMap[link.user_id],
+        id: link.user_id,
+        sessionId: req.user.id
+      }));
     res.render('links/list', { links: linksWithUsers});
 });
-
 router.get('/delete/:id_post',isLoggedIn, async (req, res) =>{
     const {id_post} = req.params;
     const user_id = await pool.query('SELECT user_id FROM posts where id_post = ?', id_post);
