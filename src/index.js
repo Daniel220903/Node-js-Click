@@ -15,7 +15,7 @@ const MySQLStore = require('express-mysql-session')(session);
 //Es el metodo de autenticacion con la base al iniciar sesion
 const passport = require('passport');
 const helper = require('./lib/helper');
-
+const {PORT} = require ('./keys.js');
 const {database} = require('./keys');
 
 //inicializo las variables
@@ -23,7 +23,7 @@ const app = express();
 require('./lib/passport');
 
 //configuraciones
-app.set('port', process.env.PORT || 4000);
+// app.set('port', process.env.PORT || 4000);
 //Defino la ruta de la carpeta views
 app.set('views', path.join(__dirname, 'views'));
   
@@ -72,7 +72,8 @@ app.use('/links', require('./routes/links'));
 app.use(express.static(path.join(__dirname, 'public')));
  
 //Inicializo el servidor
-app.listen(app.get('port'), () => {
-    console.log('Server on Port:' + app.get('port'));
-});
-
+// app.listen(app.get('port'), () => {
+//     console.log('Server on Port:' + app.get('port'));
+// });
+app.listen(PORT)
+console.log('Server on port', PORT)
