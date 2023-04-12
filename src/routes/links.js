@@ -93,11 +93,11 @@ router.get('/edit/:id_post',isLoggedIn, async (req, res) =>{
         router.post('/edit/:id_post', async (req, res) =>{
             const{id_post} = req.params;
             const edited = '1';
-            const {tittle, description,created_at} = req.body;
+            const {tittle, description} = req.body;
             const newPub = {
                 tittle,
                 description,
-                created_at,
+                created_at: new Date(),
                 edited 
             };
             
