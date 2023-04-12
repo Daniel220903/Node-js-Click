@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
+   
     "start": "node src/index.js",
-    "install": "npm install --omit=dev"
+    
   },
   "keywords": [],
   "author": "",
