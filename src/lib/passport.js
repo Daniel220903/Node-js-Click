@@ -87,7 +87,7 @@ passport.use('local.signup', new LocalStrategy({
                                 }   
                         }
                     } else{
-                        done(null, false, req.flash('message','THERES ANY TROUBLE WITH YOUR EMAIL '));
+                        done(null, false, req.flash('message','PLEASE USE A VALID EMAIL'));
                     }         
                 
                 }
