@@ -48,29 +48,30 @@ passport.use('local.signup', new LocalStrategy({
             password: password,
             fullname: fullname
         };
-    const poolUsername = await pool.query('SELECT username FROM users WHERE username = ?',  newUser.username);
-    if(poolUsername[0]){
-        done(null, false, req.flash('message','USERNAME ALREADY EXISTS'));
-    }else{
-        const Capittal = /[A-Z]/;
-        const Lower = /[a-z]/;
-        const Number = /\d/;
         const special = /[!@#$%^&*(),.?":{}|<>]/;
         if((special.test(newUser.fullname)) || (special.test(newUser.password)) || (special.test(newUser.username))){
             done(null, false, req.flash('message','NO SPECIAL CHARACTERS ACCEPTED'));
         }else{
-            if ( (!Capittal.test(newUser.password)) || (!Number.test(newUser.password)) || (!Lower.test(newUser.password)) ) {
-                done(null, false, req.flash('message','PASSWORD MUST HAVE AT LEAST ONE UPPERCASE AND LOWERCASE LETTER, AND ONE NUMBER'));
-            }else{       
-                        newUser.password = await helpers.encryptPassword(password);
-                        const result = await pool.query('INSERT INTO users SET ?', [newUser]);
-                        newUser.id = result.insertId;
-                        // console.log(result);
-                        return done(null, newUser);
-            } 
+            const poolUsername = await pool.query('SELECT username FROM users WHERE username = ?',  newUser.username);
+            if(poolUsername[0]){
+                done(null, false, req.flash('message','USERNAME ALREADY EXISTS'));
+            }else{
+                const Capittal = /[A-Z]/;
+                const Lower = /[a-z]/;
+                const Number = /\d/;
+               
+              
+                    if ( (!Capittal.test(newUser.password)) || (!Number.test(newUser.password)) || (!Lower.test(newUser.password)) ) {
+                        done(null, false, req.flash('message','PASSWORD MUST HAVE AT LEAST ONE UPPERCASE AND LOWERCASE LETTER, AND ONE NUMBER'));
+                    }else{       
+                                newUser.password = await helpers.encryptPassword(password);
+                                const result = await pool.query('INSERT INTO users SET ?', [newUser]);
+                                newUser.id = result.insertId;
+                                // console.log(result);
+                                return done(null, newUser);
+                    }   
+            }
         }
-       
-    }
 }));
 
 
