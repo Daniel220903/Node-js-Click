@@ -60,7 +60,6 @@ passport.use('local.signup', new LocalStrategy({
                 const Lower = /[a-z]/;
                 const Number = /\d/;
                
-              
                     if ( (!Capittal.test(newUser.password)) || (!Number.test(newUser.password)) || (!Lower.test(newUser.password)) ) {
                         done(null, false, req.flash('message','PASSWORD MUST HAVE AT LEAST ONE UPPERCASE AND LOWERCASE LETTER, AND ONE NUMBER'));
                     }else{       
