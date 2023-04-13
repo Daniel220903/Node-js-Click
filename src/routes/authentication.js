@@ -5,6 +5,8 @@ const pool = require('../database.js');
 const {isLoggedIn,isNotLoggedIn} = require('../lib/auth');
 
 
+// AQUI EMPIEZAN LOS RENDER DE LAS SESIONES
+
 //El .get es lo que se renderizara en la pestaña que vera el usuario
 router.get('/signup',  isNotLoggedIn, (req, res) => {
     res.render('auth/signup');
@@ -33,6 +35,16 @@ router.post('/signin',isNotLoggedIn, isNotLoggedIn, (req, res, next) => {
 
 });
 
+router.get('/logout', isLoggedIn, (req, res) => {
+    req.logOut(function(err) {
+        if (err) {
+            console.log(err);
+        }
+        res.redirect('/signin');
+    });
+});
+
+// AQUI TERMINAN
 
 router.get('/profile/:user_id', isLoggedIn, async(req, res) => {
     // res.send('Perfil del usuario ' + req.params.user_id);
@@ -46,18 +58,16 @@ router.get('/profile/:user_id', isLoggedIn, async(req, res) => {
 
 });
 
-// router.get('/logout', (req, res) => {
-//     req.logOut();
-//     res.redirect('/signin')
-// });
-router.get('/logout', isLoggedIn, (req, res) => {
-    req.logOut(function(err) {
-        if (err) {
-            console.log(err);
-        }
-        res.redirect('/signin');
-    });
+router.get('/config/menu/:user_id', isLoggedIn, async(req, res) =>{
+    const userId = req.params.user_id;
+    const profileInfo = await pool.query('SELECT * FROM users WHERE id = ?', userId);
+    const profileUser = profileInfo[0];
+    console.log(profileUser);
+    res.render('config/menu', {userId: userId, profileUser:profileUser});
 });
+
+
+
 
 module.exports = router;
 

@@ -10,22 +10,28 @@ passport.use('local.signin' , new LocalStrategy({
     passReqToCallback: true
 }, async (req, username, password, done) => {
     //console.log(req.body);
-    const rows = await pool.query('SELECT * FROM users WHERE username = ?' ,[username]);
-    if(rows.length > 0) {
-        const user = rows[0];
-        const validPassword = await helpers.matchPassword(password, user.password);
-        
-        if(validPassword){
-            // console.log("VALIDA");
-            done(null , user, req.flash('sucess','WELCOME' + user.id));
-            console.log(user.id);
-        }else{
-            // console.log("INVALIDA");
-            done(null, false, req.flash('message','PASSWORD DOES NOT MATCH'));
-        }
+    const special = /[!@#$%^&*(),.?":{}|<>]/;
+    if((special.test(username)) || (special.test(password))){
+        done(null, false, req.flash('message','NO SPECIAL CHARACTERS ACCEPTED'));
     }else{
-       return done(null, false, req.flash('message','USER DOES NOT MATCH'));
+        const rows = await pool.query('SELECT * FROM users WHERE username = ?' ,[username]);
+        if(rows.length > 0) {
+            const user = rows[0];
+            const validPassword = await helpers.matchPassword(password, user.password);
+            
+            if(validPassword){
+                // console.log("VALIDA");
+                done(null , user, req.flash('sucess','WELCOME' + user.id));
+                console.log(user.id);
+            }else{
+                // console.log("INVALIDA");
+                done(null, false, req.flash('message','PASSWORD DOES NOT MATCH'));
+            }
+        }else{
+           return done(null, false, req.flash('message','USER DOES NOT MATCH'));
+        }
     }
+  
     
 }));
 
@@ -42,12 +48,29 @@ passport.use('local.signup', new LocalStrategy({
             password: password,
             fullname: fullname
         };
-    newUser.password = await helpers.encryptPassword(password);
-    const result = await pool.query('INSERT INTO users SET ?', [newUser]);
-    newUser.id = result.insertId;
-    // console.log(result);
-    return done(null, newUser);
-
+    const poolUsername = await pool.query('SELECT username FROM users WHERE username = ?',  newUser.username);
+    if(poolUsername[0]){
+        done(null, false, req.flash('message','USERNAME ALREADY EXISTS'));
+    }else{
+        const Capittal = /[A-Z]/;
+        const Lower = /[a-z]/;
+        const Number = /\d/;
+        const special = /[!@#$%^&*(),.?":{}|<>]/;
+        if((special.test(newUser.fullname)) || (special.test(newUser.password)) || (special.test(newUser.username))){
+            done(null, false, req.flash('message','NO SPECIAL CHARACTERS ACCEPTED'));
+        }else{
+            if ( (!Capittal.test(newUser.password)) || (!Number.test(newUser.password)) || (!Lower.test(newUser.password)) ) {
+                done(null, false, req.flash('message','PASSWORD MUST HAVE AT LEAST ONE UPPERCASE AND LOWERCASE LETTER, AND ONE NUMBER'));
+            }else{       
+                        newUser.password = await helpers.encryptPassword(password);
+                        const result = await pool.query('INSERT INTO users SET ?', [newUser]);
+                        newUser.id = result.insertId;
+                        // console.log(result);
+                        return done(null, newUser);
+            } 
+        }
+       
+    }
 }));
 
 
