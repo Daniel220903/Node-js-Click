@@ -33,8 +33,6 @@ passport.use('local.signin' , new LocalStrategy({
            return done(null, false, req.flash('message','USER DOES NOT MATCH'));
         }
     }
-  
-    
 }));
 
 
@@ -51,40 +49,36 @@ passport.use('local.signup', new LocalStrategy({
             password: password,
             fullname: fullname
         };
-   
             const special = /[!#$%^&*(),?"{}|<>]/;
             if((special.test(newUser.fullname)) || (special.test(newUser.password)) || (special.test(newUser.username)) || (special.test(newUser.email)) ){
                 done(null, false, req.flash('message','NO SPECIAL CHARACTERS ACCEPTED'));
             }else{
-                mbv.MailboxValidator_single_query(email, mbv_read_single);
-                
+                mbv.MailboxValidator_single_query(email, mbv_read_single);         
                async function mbv_read_single(err, res, data) {
-                // console.log("email_address: " + data.email_address);
-		        // console.log("domain: " + data.domain);
-		        // console.log("is_free: " + data.is_free);
-		        // console.log("is_syntax: " + data.is_syntax);
-		        // console.log("is_domain: " + data.is_domain);
-		        // console.log("is_smtp: " + data.is_smtp);
-		        // console.log("is_verified: " + data.is_verified);
                 const exist = data.is_verified;//ESTA MADRE REGRESA UN STRING EN LUGAR DE UN BOOLEAN
                     if(exist == 'True'){
                         const poolUsername = await pool.query('SELECT username FROM users WHERE username = ?',  newUser.username);
                         if(poolUsername[0]){
                             done(null, false, req.flash('message','USERNAME ALREADY EXISTS'));
                         }else{
-                            const Capittal = /[A-Z]/;
-                            const Lower = /[a-z]/;
-                            const Number = /\d/;
-                           
-                                if ( (!Capittal.test(newUser.password)) || (!Number.test(newUser.password)) || (!Lower.test(newUser.password)) ) {
-                                    done(null, false, req.flash('message','PASSWORD MUST HAVE AT LEAST ONE UPPERCASE AND LOWERCASE LETTER, AND ONE NUMBER'));
-                                }else{       
-                                            newUser.password = await helpers.encryptPassword(password);
-                                            const result = await pool.query('INSERT INTO users SET ?', [newUser]);
-                                            newUser.id = result.insertId;
-                                            // console.log(result);
-                                            return done(null, newUser);
-                                }   
+                            const poolEmail = await pool.query('SELECT email FROM users WHERE email = ?', newUser.email);
+                            if(poolEmail[0]){
+                                done(null, false, req.flash('message','EMAIL ALREADY EXISTS'));
+                            }else{
+                                const Capittal = /[A-Z]/;
+                                const Lower = /[a-z]/;
+                                const Number = /\d/;
+                               
+                                    if ( (!Capittal.test(newUser.password)) || (!Number.test(newUser.password)) || (!Lower.test(newUser.password)) ) {
+                                        done(null, false, req.flash('message','PASSWORD MUST HAVE AT LEAST ONE UPPERCASE AND LOWERCASE LETTER, AND ONE NUMBER'));
+                                    }else{       
+                                                newUser.password = await helpers.encryptPassword(password);
+                                                const result = await pool.query('INSERT INTO users SET ?', [newUser]);
+                                                newUser.id = result.insertId;
+                                                // console.log(result);
+                                                return done(null, newUser);
+                                    }  
+                            }    
                         }
                     } else{
                         done(null, false, req.flash('message','PLEASE USE A VALID EMAIL'));
@@ -93,8 +87,6 @@ passport.use('local.signup', new LocalStrategy({
                 }
                
             }
-      
-        
 }));
 
 

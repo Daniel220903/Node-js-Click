@@ -35,7 +35,7 @@ router.post('/add',isLoggedIn, async(req , res) => {
 router.get('/', isLoggedIn,  async (req, res) => {
     const links = await pool.query('SELECT * FROM posts');
     const userIds = links.map(link => link.user_id);
-
+    
     if (userIds.length === 0) {
       // Si el array userIds está vacío, puedes manejar el error o devolver una respuesta adecuada
       // Aquí se muestra un ejemplo de cómo manejar el error
